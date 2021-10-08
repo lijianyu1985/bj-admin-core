@@ -22,7 +22,7 @@ class EditableTagGroup extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.value) {
       this.setState({ tags: nextProps.value });
     }

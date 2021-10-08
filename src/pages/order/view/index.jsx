@@ -341,8 +341,8 @@ class OrderView extends Component {
                     <Descriptions.Item label="状态">已完成</Descriptions.Item>
                   </Descriptions>
                   <Timeline>
-                    {current.shipping.items.map(x => (
-                      <Timeline.Item>
+                    {current.shipping.items.map((x,i) => (
+                      <Timeline.Item key={i}>
                         {x.status} {toDisplayTimestamp(x.timestamp)}
                       </Timeline.Item>
                     ))}
