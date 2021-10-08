@@ -1,5 +1,5 @@
 /* eslint-disable react/sort-comp */
-import { Button, Card, Divider, Popconfirm, Table, Col, Input, Row, Tag,Select } from 'antd';
+import { Button, Card, Divider, Popconfirm, Table, Col, Input, Row, Tag, Select } from 'antd';
 import React, { Component } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { connect } from 'dva';
@@ -12,7 +12,7 @@ import { clearEmptyFields } from '../../../utils/utils';
 
 const FormItem = Form.Item;
 
-const types = ['API','Admin','小程序','移动Web','Web','App'];
+const types = ['API', 'Admin', '小程序', '移动Web', 'Web', 'App'];
 
 @connect(({ resource, loading }) => ({
   resource,
@@ -201,21 +201,22 @@ class ResourceList extends Component {
             xl: 48,
           }}
         >
-        <Col md={8} sm={24}>
-          <FormItem label="资源名">
-            {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-          </FormItem>
-        </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="资源名">
+              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>
           <Col md={8} sm={24}>
             <FormItem label="类型">
               {getFieldDecorator('type')(
-                <Select style={{ width: 200 }} allowClear >
+                <Select style={{ width: 200 }} allowClear>
                   {types.map(type => (
                     <Select.Option key={type} value={type}>
                       {type}
                     </Select.Option>
                   ))}
-                </Select>)}
+                </Select>,
+              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>

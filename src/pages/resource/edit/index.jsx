@@ -107,11 +107,7 @@ class BasicForm extends Component {
           </div>
           <Card bordered={false}>
             <Form ref={this.formRef} {...layout} initialValues={current}>
-              <Form.Item
-                label="资源名"
-                name="name"
-                rules={[{ required: true, message: '资源名' }]}
-              >
+              <Form.Item label="资源名" name="name" rules={[{ required: true, message: '资源名' }]}>
                 <Input disabled={editing} />
               </Form.Item>
               <Form.Item label="路径" name="path" rules={[{ required: true, message: '路径' }]}>

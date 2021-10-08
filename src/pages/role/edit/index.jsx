@@ -103,11 +103,7 @@ class BasicForm extends Component {
           </div>
           <Card bordered={false}>
             <Form ref={this.formRef} {...layout} initialValues={current}>
-              <Form.Item
-                label="角色名"
-                name="name"
-                rules={[{ required: true, message: '角色名' }]}
-              >
+              <Form.Item label="角色名" name="name" rules={[{ required: true, message: '角色名' }]}>
                 <Input disabled={editing} />
               </Form.Item>
               <Form.Item

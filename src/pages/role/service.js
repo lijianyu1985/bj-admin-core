@@ -47,4 +47,3 @@ export async function changeAccount(params) {
     data: params,
   });
 }
-

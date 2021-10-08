@@ -5,11 +5,11 @@ const Model = modelFactory({
   namespace: 'role',
   state: {
     list: [],
-    resources:[]
+    resources: [],
   },
   effects: {
     *getAllResources({ _ }, { put, call }) {
-      const response = yield call(getAllResources, {modelName:'Resource'});
+      const response = yield call(getAllResources, { modelName: 'Resource' });
       yield put({
         type: 'changeAllResources',
         payload: response,
@@ -18,7 +18,7 @@ const Model = modelFactory({
   },
   reducers: {
     changeAllResources(state, { payload }) {
-      return { ...state, resources: payload.list ||[]};
+      return { ...state, resources: payload.list || [] };
     },
   },
 });

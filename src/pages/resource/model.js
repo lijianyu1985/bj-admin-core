@@ -4,11 +4,9 @@ const Model = modelFactory({
   namespace: 'resource',
   state: {
     list: [],
-    resources:[]
+    resources: [],
   },
-  effects: {
-  },
-  reducers: {
-  },
+  effects: {},
+  reducers: {},
 });
 export default Model;
