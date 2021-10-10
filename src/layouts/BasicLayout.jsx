@@ -34,7 +34,7 @@ const noMatch = (
 const menuDataRender = menuList =>
   menuList.map(item => {
     const localItem = { ...item, children: item.children ? menuDataRender(item.children) : [] };
-    return Authorized.check(item.authority, localItem, null);
+    return Authorized.check(item.authority, item.path, localItem, null);
   });
 
 const defaultFooterDom = (
@@ -170,7 +170,7 @@ const BasicLayout = props => {
         {...props}
         {...settings}
       >
-        <Authorized authority={authorized.authority} noMatch={noMatch}>
+        <Authorized path={location.pathname} authority={authorized.authority} noMatch={noMatch}>
           {children}
         </Authorized>
       </ProLayout>

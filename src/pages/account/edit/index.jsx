@@ -40,11 +40,6 @@ class BasicForm extends Component {
       dispatch({
         type: 'accountEdit/getAccount',
         payload: { id: this.props.location.query.id },
-        callback: account => {
-          this.setState({
-            currentAccount: account || {},
-          });
-        },
       });
     }
     dispatch({
@@ -52,30 +47,8 @@ class BasicForm extends Component {
     });
   }
 
-  handleSearch = nameOrCode => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'accountEdit/findWorkshopsByNameOrCode',
-      payload: {
-        nameOrCode,
-      },
-    });
-  };
-
-  handlerWorkshopBlur = value => {
-    const {
-      accountEdit: { workshopList },
-      form,
-    } = this.props;
-    if (!lodash.find(workshopList, { _id: value })) {
-      form.setFieldsValue({
-        workshopId: null,
-      });
-    }
-  };
-
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.currentAccount !== prevState.currentAccount) {
+    if (this.props.accountEdit.currentAccount !== prevProps.accountEdit.currentAccount) {
       this.formRef.current.resetFields();
     }
   }
@@ -84,7 +57,7 @@ class BasicForm extends Component {
     e.preventDefault();
     const { dispatch } = this.props;
     const { editing, accountId } = this.state;
-    const values = await this.formRef.current.validateFields(['username', 'roles', 'profile.name']);
+    const values = await this.formRef.current.validateFields(['username', 'roles', 'name']);
     if (!editing) {
       dispatch({
         type: 'accountEdit/create',
@@ -102,9 +75,9 @@ class BasicForm extends Component {
 
   render() {
     const {
-      accountEdit: { roles },
+      accountEdit: { roles, currentAccount },
     } = this.props;
-    const { currentAccount, editing } = this.state;
+    const { editing } = this.state;
 
     return (
       <>
@@ -144,8 +117,5 @@ class BasicForm extends Component {
 }
 
 export default connect(({ accountEdit, loading }) => ({
-  creatingAccount: loading.effects['accountEdit/create'],
-  changingAccount: loading.effects['accountEdit/change'],
-  findingWorkshops: loading.effects['accountEdit/findWorkshopsByNameOrCode'],
   accountEdit,
 }))(BasicForm);

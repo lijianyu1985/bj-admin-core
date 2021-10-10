@@ -5,6 +5,7 @@ import check from './CheckPermissions';
 const Authorized = ({
   children,
   authority,
+  path,
   noMatch = (
     <Result
       status={403}
@@ -14,7 +15,7 @@ const Authorized = ({
   ),
 }) => {
   const childrenRender = typeof children === 'undefined' ? null : children;
-  const dom = check(authority, childrenRender, noMatch);
+  const dom = check(authority, path, childrenRender, noMatch);
   return <>{dom}</>;
 };
 

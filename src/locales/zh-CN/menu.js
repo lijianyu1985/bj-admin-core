@@ -58,4 +58,7 @@ export default {
   'menu.resource': '资源',
   'menu.resource.resource-list': '资源列表',
   'menu.resource.resource-edit': '编辑资源',
+  'menu.todo': 'TODO',
+  'menu.todo.todo-list': 'TODO列表',
+  'menu.todo.todo-edit': '编辑TODO',
 };

@@ -12,11 +12,11 @@ import { clearEmptyFields } from '../../../utils/utils';
 
 const FormItem = Form.Item;
 
-@connect(({ accountList, loading }) => ({
-  accountList,
-  loading: loading.models.accountList,
+@connect(({ todo, loading }) => ({
+  todo,
+  loading: loading.models.todo,
 }))
-class AccountList extends Component {
+class TodoList extends Component {
   state = {
     pagination: {
       showSizeChanger: true,
@@ -24,33 +24,15 @@ class AccountList extends Component {
       pageSize: 10,
       page: 1,
     },
-    prevSearchUsername: '',
+    prevSearchName: '',
   };
 
   columns = [
     {
-      title: '账户名',
-      dataIndex: 'username',
-      key: 'username',
-      render: text => text,
-    },
-    {
-      title: '姓名',
+      title: 'TODO名',
       dataIndex: 'name',
       key: 'name',
       render: text => text,
-    },
-    {
-      title: '角色',
-      dataIndex: 'roles',
-      key: 'roles',
-      render: roles => (
-        <div>
-          {roles.map(role => (
-            <Tag key={role}>{role}</Tag>
-          ))}
-        </div>
-      ),
     },
     {
       title: '操作',
@@ -70,10 +52,6 @@ class AccountList extends Component {
           <Popconfirm title="是否要删除此行？" onConfirm={() => this.deleteItem(record)}>
             <a>删除</a>
           </Popconfirm>
-          <Divider type="vertical" />
-          <Popconfirm title="是否要重置密码？" onConfirm={() => this.resetPassword(record)}>
-            <a>重置密码</a>
-          </Popconfirm>
         </span>
       ),
     },
@@ -83,12 +61,12 @@ class AccountList extends Component {
     const { dispatch } = this.props;
     const { pagination } = this.state;
     dispatch({
-      type: 'accountList/fetch',
+      type: 'todo/page',
       payload: {
         size: pagination.pageSize || 10,
         page: pagination.current || 1,
-        modelName: 'Account',
-        selector: '_id username name roles',
+        modelName: 'Todo',
+        selector: '_id name',
       },
     });
   }
@@ -100,25 +78,25 @@ class AccountList extends Component {
 
   handleSearch = e => {
     // eslint-disable-next-line no-unused-expressions
-    e && e.preventDefault();
+    e && e.preventDefault && e.preventDefault();
     const { dispatch, form } = this.props;
     const { pagination } = this.state;
     pagination.current = 1;
     this.setState(
       {
         pagination,
-        prevSearchUsername: form.getFieldValue('username'),
+        prevSearchName: form.getFieldValue('name'),
       },
       () => {
         form.validateFields((err, fieldsValue) => {
           if (err) return;
           dispatch({
-            type: 'accountList/fetch',
+            type: 'todo/page',
             payload: {
               size: pagination.pageSize || 10,
               page: pagination.current || 1,
-              modelName: 'Account',
-              selector: '_id name username roles',
+              modelName: 'Todo',
+              selector: '_id name',
               query: clearEmptyFields(fieldsValue),
             },
           });
@@ -127,33 +105,23 @@ class AccountList extends Component {
     );
   };
 
-  deleteItem = account => {
+  deleteItem = todo => {
     // eslint-disable-next-line no-console
     const { dispatch } = this.props;
     dispatch({
-      type: 'accountList/delete',
+      type: 'todo/remove',
       // eslint-disable-next-line no-underscore-dangle
-      payload: { ids: [account._id] },
+      payload: { modelName: 'Todo', ids: [todo._id] },
       callback: this.handleSearch,
     });
   };
 
-  resetPassword = account => {
-    // eslint-disable-next-line no-console
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'accountList/resetPassword',
-      // eslint-disable-next-line no-underscore-dangle
-      payload: { id: account._id },
-    });
-  };
-
-  editItem = account => {
+  editItem = todo => {
     router.push({
       pathname: 'edit',
       query: {
         // eslint-disable-next-line no-underscore-dangle
-        id: account._id,
+        id: todo._id,
       },
     });
   };
@@ -162,14 +130,14 @@ class AccountList extends Component {
     // eslint-disable-next-line react/no-access-state-in-setstate
     const pager = { ...this.state.pagination };
     const {
-      accountList: { total },
+      todo: { total },
       dispatch,
       form,
     } = this.props;
     pager.current = pagination.current;
     pager.pageSize = pagination.pageSize;
     pager.total = total;
-    const { prevSearchUsername } = this.state;
+    const { prevSearchName } = this.state;
     this.setState(
       {
         pagination: pager,
@@ -178,11 +146,13 @@ class AccountList extends Component {
         form.validateFields((err, fieldsValue) => {
           if (err) return;
           dispatch({
-            type: 'accountList/fetch',
+            type: 'todo/page',
             payload: {
-              pageSize: pagination.pageSize || 10,
+              size: pagination.pageSize || 10,
               page: pagination.current || 1,
-              username: prevSearchUsername,
+              modelName: 'Todo',
+              selector: '_id name',
+              query: clearEmptyFields(fieldsValue),
             },
           });
         });
@@ -192,8 +162,8 @@ class AccountList extends Component {
 
   componentDidUpdate() {
     const { pagination } = this.state;
-    if (this.props.accountList.total !== pagination.total) {
-      pagination.total = this.props.accountList.total;
+    if (this.props.todo.total !== pagination.total) {
+      pagination.total = this.props.todo.total;
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ pagination });
     }
@@ -212,8 +182,8 @@ class AccountList extends Component {
           }}
         >
           <Col md={8} sm={24}>
-            <FormItem label="账户名">
-              {getFieldDecorator('username')(<Input placeholder="请输入" />)}
+            <FormItem label="TODO名">
+              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -238,7 +208,7 @@ class AccountList extends Component {
 
   render() {
     const {
-      accountList: { list },
+      todo: { list },
       loading,
     } = this.props;
     const { pagination } = this.state;
@@ -300,4 +270,4 @@ class AccountList extends Component {
   }
 }
 
-export default Form.create()(AccountList);
+export default Form.create()(TodoList);

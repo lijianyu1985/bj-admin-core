@@ -6,8 +6,12 @@ const Model = {
   namespace: 'accountEdit',
   state: { roles: [] },
   effects: {
-    *getAccount({ payload, callback }, { call }) {
+    *getAccount({ payload, callback }, { put, call }) {
       const response = yield call(getAccountService, payload);
+      yield put({
+        type: 'setCurrentAccount',
+        payload: response,
+      });
       // eslint-disable-next-line no-unused-expressions
       callback && callback(response && response.data);
     },

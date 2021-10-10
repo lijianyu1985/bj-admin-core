@@ -3,6 +3,7 @@ import { Redirect } from 'umi';
 import { connect } from 'dva';
 import Authorized from '@/utils/Authorized';
 import { getRouteAuthority } from '@/utils/utils';
+import { getToken } from '@/utils/authority';
 
 const AuthComponent = ({
   children,
@@ -14,11 +15,11 @@ const AuthComponent = ({
   },
   user,
 }) => {
-  const { currentUser } = user;
   const { routes = [] } = route;
-  const isLogin = currentUser && currentUser.username;
+  const isLogin = getToken();
   return (
     <Authorized
+      path={location.pathname}
       authority={getRouteAuthority(location.pathname, routes) || ''}
       noMatch={isLogin ? <Redirect to="/exception/403" /> : <Redirect to="/user/login" />}
     >
@@ -27,6 +28,6 @@ const AuthComponent = ({
   );
 };
 
-export default connect(({ user }) => ({
+export default connect(({user}) => ({
   user,
 }))(AuthComponent);

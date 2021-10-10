@@ -1,53 +1,59 @@
 import React from 'react';
-import { CURRENT } from './renderAuthorize'; 
-
+import { CURRENT } from './renderAuthorize';
+import { trim } from 'lodash';
 import PromiseRender from './PromiseRender';
 
 /**
  * 通用权限检查方法
  * Common check permissions method
  * @param { 权限判定 | Permission judgment } authority
+ * @param { 当前路径 | Current path } path
  * @param { 你的权限 | Your permission description } currentAuthority
  * @param { 通过的组件 | Passing components } target
  * @param { 未通过的组件 | no pass components } Exception
  */
-const checkPermissions = (authority, currentAuthority, target, Exception) => {
-  // 没有判定权限.默认查看所有
+const checkPermissions = (authority, path, currentAuthority, target, Exception) => {
+  // 没有判定权限. 做resource检查
   // Retirement authority, return target;
-  if (!authority) {
+  if (currentAuthority === '*' || currentAuthority.some(item => item === '*')) {
+    return target;
+  }
+  const targetAuthority = authority || (path.indexOf('exception') >= 0 ? '' : trim(path, '/'));
+
+  if (authority === false || !targetAuthority) {
     return target;
   } // 数组处理
-  if (Array.isArray(authority)) {
+  if (Array.isArray(targetAuthority)) {
     if (Array.isArray(currentAuthority)) {
-      if (currentAuthority.some(item => authority.includes(item))) {
+      if (currentAuthority.some(item => targetAuthority.includes(item))) {
         return target;
       }
-    } else if (authority.includes(currentAuthority)) {
+    } else if (targetAuthority.includes(currentAuthority)) {
       return target;
     }
 
     return Exception;
   } // string 处理
 
-  if (typeof authority === 'string') {
+  if (typeof targetAuthority === 'string') {
     if (Array.isArray(currentAuthority)) {
-      if (currentAuthority.some(item => authority === item)) {
+      if (currentAuthority.some(item => targetAuthority === item)) {
         return target;
       }
-    } else if (authority === currentAuthority) {
+    } else if (targetAuthority === currentAuthority) {
       return target;
     }
 
     return Exception;
   } // Promise 处理
 
-  if (authority instanceof Promise) {
-    return <PromiseRender ok={target} error={Exception} promise={authority} />;
+  if (targetAuthority instanceof Promise) {
+    return <PromiseRender ok={target} error={Exception} promise={targetAuthority} />;
   } // Function 处理
 
-  if (typeof authority === 'function') {
+  if (typeof targetAuthority === 'function') {
     try {
-      const bool = authority(currentAuthority); // 函数执行后返回值是 Promise
+      const bool = targetAuthority(currentAuthority); // 函数执行后返回值是 Promise
 
       if (bool instanceof Promise) {
         return <PromiseRender ok={target} error={Exception} promise={bool} />;
@@ -69,8 +75,8 @@ const checkPermissions = (authority, currentAuthority, target, Exception) => {
 
 export { checkPermissions };
 
-function check(authority, target, Exception) {
-  return checkPermissions(authority, CURRENT, target, Exception);
+function check(authority, path, target, Exception) {
+  return checkPermissions(authority, path, CURRENT, target, Exception);
 }
 
 export default check;

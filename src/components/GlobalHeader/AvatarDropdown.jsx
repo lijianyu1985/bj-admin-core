@@ -22,7 +22,7 @@ class AvatarDropdown extends React.Component {
       return;
     }
 
-    router.push(`/account/${key}`);
+    router.push(`${key}`);
   };
 
   render() {
@@ -36,13 +36,7 @@ class AvatarDropdown extends React.Component {
     const menuHeaderDropdown = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={this.onMenuClick}>
         {menu && (
-          <Menu.Item key="center">
-            <UserOutlined />
-            个人中心
-          </Menu.Item>
-        )}
-        {menu && (
-          <Menu.Item key="settings">
+          <Menu.Item key="/profile">
             <SettingOutlined />
             个人设置
           </Menu.Item>
