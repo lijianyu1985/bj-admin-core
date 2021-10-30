@@ -16,7 +16,7 @@ const layout = {
 class BasicForm extends Component {
   state = {
     editing: false,
-    roleId: '',
+    permissionId: '',
   };
 
   formLayout = {
@@ -33,26 +33,26 @@ class BasicForm extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'role/resetCurrent',
+      type: 'permission/resetCurrent',
     });
     this.setState({
       // eslint-disable-next-line react/no-unused-state
       editing: !!this.props.location.query.id,
-      roleId: this.props.location.query.id,
+      permissionId: this.props.location.query.id,
     });
     if (this.props.location.query.id) {
       dispatch({
-        type: 'role/get',
+        type: 'permission/get',
         payload: { id: this.props.location.query.id },
       });
     }
     dispatch({
-      type: 'role/getAllPermissions',
+      type: 'permission/getAllResources',
     });
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.role.current !== prevProps.role.current) {
+    if (this.props.permission.current !== prevProps.permission.current) {
       this.formRef.current.resetFields();
     }
   }
@@ -60,11 +60,11 @@ class BasicForm extends Component {
   handleSubmit = async e => {
     e.preventDefault();
     const { dispatch } = this.props;
-    const { editing, roleId } = this.state;
-    const values = await this.formRef.current.validateFields(['permissions', 'name']);
+    const { editing, permissionId } = this.state;
+    const values = await this.formRef.current.validateFields(['resources', 'name']);
     if (!editing) {
       dispatch({
-        type: 'role/create',
+        type: 'permission/create',
         payload: { ...values },
         callback: () => {
           router.push({
@@ -76,8 +76,8 @@ class BasicForm extends Component {
       const payload = Object.assign({}, values);
       delete payload.username;
       dispatch({
-        type: 'role/change',
-        payload: { ...payload, id: roleId },
+        type: 'permission/change',
+        payload: { ...payload, id: permissionId },
         callback: () => {
           router.push({
             pathname: 'list',
@@ -89,7 +89,7 @@ class BasicForm extends Component {
 
   render() {
     const {
-      role: { permissions, current },
+      permission: { resources, current },
     } = this.props;
 
     return (
@@ -102,13 +102,13 @@ class BasicForm extends Component {
           </div>
           <Card bordered={false}>
             <Form ref={this.formRef} {...layout} initialValues={current}>
-              <Form.Item label="角色名" name="name" rules={[{ required: true, message: '角色名' }]}>
+              <Form.Item label="权限名" name="name" rules={[{ required: true, message: '权限名' }]}>
                 <Input  />
               </Form.Item>
               <Form.Item
-                label="权限"
-                name="permissions"
-                rules={[{ required: true, message: '权限' }]}
+                label="资源"
+                name="resources"
+                rules={[{ required: true, message: '资源' }]}
               >
                 <Select
                   mode="multiple"
@@ -116,9 +116,9 @@ class BasicForm extends Component {
                     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {permissions.map(permission => (
-                    <Option key={permission._id} value={permission._id}>
-                      {`${permission.name}`}
+                  {resources.map(resource => (
+                    <Option key={resource._id} value={resource._id}>
+                      {`${resource.type} - ${resource.identifier}`}
                     </Option>
                   ))}
                 </Select>
@@ -131,8 +131,8 @@ class BasicForm extends Component {
   }
 }
 
-export default connect(({ role, loading }) => ({
-  creatingRole: loading.effects['role/create'],
-  changingRole: loading.effects['role/change'],
-  role,
+export default connect(({ permission, loading }) => ({
+  creatingPermission: loading.effects['permission/create'],
+  changingPermission: loading.effects['permission/change'],
+  permission,
 }))(BasicForm);

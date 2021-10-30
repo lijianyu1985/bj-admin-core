@@ -10,7 +10,7 @@ const Model = {
       const response = yield call(fakeRegister, payload);
       yield put({
         type: 'registerHandle',
-        payload: response,
+        payload: response && response.data,
       });
     },
   },

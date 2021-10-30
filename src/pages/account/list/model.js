@@ -1,5 +1,11 @@
-import { notification } from 'antd';
-import { archiveAccount, queryAccountList, defaultPassword } from './service';
+import {
+  notification
+} from 'antd';
+import {
+  archiveAccount,
+  queryAccountList,
+  defaultPassword
+} from './service';
 
 const Model = {
   namespace: 'accountList',
@@ -7,16 +13,39 @@ const Model = {
     list: [],
   },
   effects: {
-    *fetch({ payload }, { call, put }) {
-      const response = yield call(queryAccountList, payload);
+    * fetch({
+      payload
+    }, {
+      call,
+      put
+    }) {
+      if (payload.query && payload.query.name) {
+        payload.query.name = {
+          '$regex': payload.query.name
+        };
+      }
+      if (payload.query && payload.query.username) {
+        payload.query.username = {
+          '$regex': payload.query.username
+        };
+      }
+      const response = yield call(queryAccountList, Object.assign({}, payload, {
+        projection: '_id username name roles',
+        population: 'roles:_id name',
+      }));
       if (response && response.success) {
         yield put({
           type: 'queryList',
-          payload: response || {},
+          payload: response && response.data || {},
         });
       }
     },
-    *delete({ payload, callback }, { call }) {
+    * delete({
+      payload,
+      callback
+    }, {
+      call
+    }) {
       const response = yield call(archiveAccount, payload);
       if (response && response.success) {
         notification.success({
@@ -27,7 +56,12 @@ const Model = {
         callback && callback();
       }
     },
-    *resetPassword({ payload, callback }, { call }) {
+    * resetPassword({
+      payload,
+      callback
+    }, {
+      call
+    }) {
       const response = yield call(defaultPassword, payload);
       if (response && response.success) {
         notification.success({

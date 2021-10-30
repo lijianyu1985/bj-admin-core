@@ -1,28 +1,28 @@
 import request from '@/utils/request';
 
 export async function getAccountService(params) {
-  return request('/AccountManagement/Get', {
+  return request('/account/Get', {
     method: 'GET',
     params,
   });
 }
 
 export async function getAllRoles(params) {
-  return request('/Common/All', {
+  return request('/role/find', {
     method: 'GET',
     params,
   });
 }
 
 export async function createAccount(params) {
-  return request('/AccountManagement/Create', {
+  return request('/account/Create', {
     method: 'POST',
     data: params,
   });
 }
 
 export async function changeAccount(params) {
-  return request('/AccountManagement/Change', {
+  return request('/account/Change', {
     method: 'POST',
     data: params,
   });

@@ -41,6 +41,11 @@ class BasicForm extends Component {
         type: 'accountEdit/getAccount',
         payload: { id: this.props.location.query.id },
       });
+    }else{
+      dispatch({
+        type: 'accountEdit/setCurrentAccount',
+        payload: { },
+      });
     }
     dispatch({
       type: 'accountEdit/getAllRoles',
@@ -99,7 +104,7 @@ class BasicForm extends Component {
               <Form.Item label="角色" name="roles" rules={[{ required: true, message: '角色' }]}>
                 <Select mode="multiple">
                   {roles.map(role => (
-                    <Option key={role._id} value={role.name}>
+                    <Option key={role._id} value={role._id}>
                       {role.name}
                     </Option>
                   ))}

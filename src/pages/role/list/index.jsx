@@ -11,6 +11,10 @@ import { PlusOutlined } from '@ant-design/icons';
 import { clearEmptyFields } from '../../../utils/utils';
 
 const FormItem = Form.Item;
+const queryPatch={
+  projection: '_id name',
+  // population: 'resources:_id name',
+}
 
 @connect(({ role, loading }) => ({
   role,
@@ -77,8 +81,7 @@ class RoleList extends Component {
       payload: {
         size: pagination.pageSize || 10,
         page: pagination.current || 1,
-        modelName: 'Role',
-        selector: '_id name resources',
+        ...queryPatch
       },
     });
   }
@@ -107,8 +110,7 @@ class RoleList extends Component {
             payload: {
               size: pagination.pageSize || 10,
               page: pagination.current || 1,
-              modelName: 'Role',
-              selector: '_id name resources',
+              ...queryPatch,
               query: clearEmptyFields(fieldsValue),
             },
           });
@@ -123,7 +125,7 @@ class RoleList extends Component {
     dispatch({
       type: 'role/remove',
       // eslint-disable-next-line no-underscore-dangle
-      payload: { modelName: 'Role', ids: [role._id] },
+      payload: { ids: [role._id] },
       callback: this.handleSearch,
     });
   };
@@ -172,8 +174,7 @@ class RoleList extends Component {
             payload: {
               size: pagination.pageSize || 10,
               page: pagination.current || 1,
-              modelName: 'Role',
-              selector: '_id name resources',
+              ...queryPatch,
               query: clearEmptyFields(fieldsValue),
             },
           });
@@ -281,7 +282,7 @@ class RoleList extends Component {
                 columns={this.columns}
                 dataSource={list}
                 pagination={pagination}
-                rowKey={record => record.username}
+                rowKey={record => record._id}
                 onChange={this.handleTableChange}
               />
             </Card>

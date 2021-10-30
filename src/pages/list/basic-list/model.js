@@ -35,7 +35,7 @@ const Model = {
 
       yield put({
         type: 'queryList',
-        payload: response,
+        payload: response && response.data,
       });
     },
   },

@@ -1,20 +1,20 @@
 import request from '@/utils/request';
 
 export async function getProfile(params) {
-  return request('/AccountProfile/Get', {
+  return request('/account/profile', {
     params,
   });
 }
 
 export async function changeProfile(params) {
-  return request('/AccountProfile/Change', {
+  return request('/account/changeProfile', {
     method: 'POST',
     data: params,
   });
 }
 
 export async function changePassword(params) {
-  return request('/AccountProfile/ChangePassword', {
+  return request('/account/ChangePassword', {
     method: 'POST',
     data: params,
   });

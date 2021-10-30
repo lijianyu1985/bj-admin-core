@@ -12,7 +12,7 @@ const Model = {
       const response = yield call(queryAdvancedProfile);
       yield put({
         type: 'show',
-        payload: response,
+        payload: response && response.data,
       });
     },
   },

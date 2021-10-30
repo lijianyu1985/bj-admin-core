@@ -15,7 +15,7 @@ const Model = modelFactory({
       if (response && response.success) {
         yield put({
           type: 'allCategories',
-          payload: response || {},
+          payload: response && response.data  || {},
         });
       }
     },
@@ -54,7 +54,7 @@ const Model = modelFactory({
         }
         yield put({
           type: 'skuDetails',
-          payload: response || {},
+          payload: response && response.data  || {},
         });
       }
     },
@@ -105,9 +105,9 @@ const Model = modelFactory({
     skuDetails(state, action) {
       return {
         ...state,
-        skus: (action.payload && action.payload.data && action.payload.data.skus) || [],
+        skus: (action.payload && action.payload.skus) || [],
         skusCommodity:
-          (action.payload && action.payload.data && action.payload.data.commodity) || {},
+          (action.payload && action.payload.commodity) || {},
       };
     },
   },

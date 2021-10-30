@@ -12,7 +12,7 @@ const Model = {
       if (response && response.success) {
         yield put({
           type: 'current',
-          payload: response || {},
+          payload: response && response.data  || {},
         });
       }
     },
@@ -21,7 +21,7 @@ const Model = {
       if (response && response.success) {
         yield put({
           type: 'current',
-          payload: response || {},
+          payload: response && response.data  || {},
         });
         notification.success({
           message: '成功',
@@ -58,7 +58,7 @@ const Model = {
     current(state, action) {
       return {
         ...state,
-        current: (action.payload && action.payload.data) || {},
+        current: (action.payload && action.payload) || {},
       };
     },
   },

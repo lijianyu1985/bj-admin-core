@@ -11,7 +11,7 @@ const UserModel = {
       if (response && response.success) {
         yield put({
           type: 'saveCurrentUser',
-          payload: response,
+          payload: response && response.data,
         });
       } else {
         yield put({
@@ -23,7 +23,7 @@ const UserModel = {
   },
   reducers: {
     saveCurrentUser(state, action) {
-      return { ...state, currentUser: (action.payload && action.payload.account) || {} };
+      return { ...state, currentUser: (action.payload) || {} };
     },
   },
 };

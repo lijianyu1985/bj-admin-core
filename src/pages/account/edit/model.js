@@ -10,16 +10,16 @@ const Model = {
       const response = yield call(getAccountService, payload);
       yield put({
         type: 'setCurrentAccount',
-        payload: response,
+        payload: response && response.data,
       });
       // eslint-disable-next-line no-unused-expressions
       callback && callback(response && response.data);
     },
     *getAllRoles({ _ }, { put, call }) {
-      const response = yield call(getAllRoles, { modelName: 'Role' });
+      const response = yield call(getAllRoles, { modelName: 'Role', projection: 'id name' });
       yield put({
         type: 'changeAllRoles',
-        payload: response,
+        payload: response && response.data,
       });
     },
     *create({ payload }, { call, put }) {
@@ -45,13 +45,13 @@ const Model = {
   },
   reducers: {
     changeAccountList(state, { payload }) {
-      return { ...state, accountList: payload.data };
+      return { ...state, accountList: payload };
     },
     changeAllRoles(state, { payload }) {
-      return { ...state, roles: payload.list || [] };
+      return { ...state, roles: payload || [] };
     },
     setCurrentAccount(state, { payload }) {
-      return { ...state, currentAccount: payload.data };
+      return { ...state, currentAccount: payload };
     },
   },
 };

@@ -1,5 +1,5 @@
 /* eslint-disable react/sort-comp */
-import { Button, Card, Divider, Popconfirm, Table, Col, Input, Row, Tag, Select } from 'antd';
+import { Button, Card, Divider, Popconfirm, Table, Col, Input, Row, Modal, Select } from 'antd';
 import React, { Component } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { connect } from 'dva';
@@ -11,6 +11,10 @@ import { PlusOutlined } from '@ant-design/icons';
 import { clearEmptyFields } from '../../../utils/utils';
 
 const FormItem = Form.Item;
+
+const queryPatch = {
+  projection: '_id identifier type description',
+};
 
 const types = ['API', 'Admin', '小程序', '移动Web', 'Web', 'App'];
 
@@ -27,19 +31,15 @@ class ResourceList extends Component {
       page: 1,
     },
     prevSearchName: '',
+    apiJsonModalVisiable: false,
+    adminJsonModalVisiable: false,
   };
 
   columns = [
     {
-      title: '资源名',
-      dataIndex: 'name',
-      key: 'name',
-      render: text => text,
-    },
-    {
-      title: '路径',
-      dataIndex: 'path',
-      key: 'path',
+      title: '资源标识',
+      dataIndex: 'identifier',
+      key: 'identifier',
       render: text => text,
     },
     {
@@ -85,8 +85,7 @@ class ResourceList extends Component {
       payload: {
         size: pagination.pageSize || 10,
         page: pagination.current || 1,
-        modelName: 'Resource',
-        selector: '_id name path type description',
+        ...queryPatch,
       },
     });
   }
@@ -94,6 +93,61 @@ class ResourceList extends Component {
   handleFormReset = () => {
     const { form } = this.props;
     form.resetFields();
+  };
+
+  openApiJsonModal() {
+    this.setState({ apiJsonModalVisiable: true });
+  }
+  closeApiJsonModal() {
+    this.setState({ apiJsonModalVisiable: false });
+  }
+
+  generateApiResources = () => {
+    const { dispatch } = this.props;
+
+    if (
+      this.apiJsonValue &&
+      this.apiJsonValue.resizableTextArea &&
+      this.apiJsonValue.resizableTextArea.props.value
+    ) {
+      dispatch({
+        type: 'resource/generate',
+        payload: {
+          apiJson: this.apiJsonValue.resizableTextArea.props.value,
+        },
+        callback: _ => {
+          this.closeApiJsonModal();
+        },
+      });
+    }
+  };
+
+
+  openAdminJsonModal() {
+    this.setState({ adminJsonModalVisiable: true });
+  }
+  closeAdminJsonModal() {
+    this.setState({ adminJsonModalVisiable: false });
+  }
+
+  generateAdminResources = () => {
+    const { dispatch } = this.props;
+
+    if (
+      this.adminJsonValue &&
+      this.adminJsonValue.resizableTextArea &&
+      this.adminJsonValue.resizableTextArea.props.value
+    ) {
+      dispatch({
+        type: 'resource/generateAdmin',
+        payload: {
+          adminRoutes: this.adminJsonValue.resizableTextArea.props.value,
+        },
+        callback: _ => {
+          this.closeAdminJsonModal();
+        },
+      });
+    }
   };
 
   handleSearch = e => {
@@ -105,7 +159,7 @@ class ResourceList extends Component {
     this.setState(
       {
         pagination,
-        prevSearchName: form.getFieldValue('name'),
+        prevSearchName: form.getFieldValue('identifier'),
       },
       () => {
         form.validateFields((err, fieldsValue) => {
@@ -115,9 +169,8 @@ class ResourceList extends Component {
             payload: {
               size: pagination.pageSize || 10,
               page: pagination.current || 1,
-              modelName: 'Resource',
-              selector: '_id name path type description',
-              query: clearEmptyFields(fieldsValue),
+              query: this.refactorQuery(clearEmptyFields(fieldsValue)),
+              ...queryPatch,
             },
           });
         });
@@ -131,7 +184,7 @@ class ResourceList extends Component {
     dispatch({
       type: 'resource/remove',
       // eslint-disable-next-line no-underscore-dangle
-      payload: { modelName: 'Resource', ids: [resource._id] },
+      payload: { ids: [resource._id] },
       callback: this.handleSearch,
     });
   };
@@ -157,7 +210,6 @@ class ResourceList extends Component {
     pager.current = pagination.current;
     pager.pageSize = pagination.pageSize;
     pager.total = total;
-    const { prevSearchName } = this.state;
     this.setState(
       {
         pagination: pager,
@@ -170,15 +222,23 @@ class ResourceList extends Component {
             payload: {
               size: pagination.pageSize || 10,
               page: pagination.current || 1,
-              modelName: 'Resource',
-              selector: '_id name path type description',
-              query: clearEmptyFields(fieldsValue),
+              query: this.refactorQuery(clearEmptyFields(fieldsValue)),
+              ...queryPatch,
             },
           });
         });
       },
     );
   };
+
+  refactorQuery(query) {
+    if (query && query.identifier) {
+      query.identifier = {
+        $regex: query.identifier,
+      };
+    }
+    return query;
+  }
 
   componentDidUpdate() {
     const { pagination } = this.state;
@@ -203,7 +263,7 @@ class ResourceList extends Component {
         >
           <Col md={8} sm={24}>
             <FormItem label="资源名">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('identifier')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -235,6 +295,35 @@ class ResourceList extends Component {
             </span>
           </Col>
         </Row>
+        <Divider />
+        <Row
+          gutter={{
+            md: 8,
+            lg: 24,
+            xl: 48,
+          }}
+        >
+          <Col md={8} sm={24}>
+            <span className={styles.submitButtons}>
+              <Button
+                type="primary"
+                onClick={() => {
+                  this.openApiJsonModal();
+                }}
+              >
+                生成API资源
+              </Button>
+              <Button
+                type="primary"
+                onClick={() => {
+                  this.openAdminJsonModal();
+                }}
+              >
+                生成Admin资源
+              </Button>
+            </span>
+          </Col>
+        </Row>
       </Form>
     );
   }
@@ -244,7 +333,7 @@ class ResourceList extends Component {
       resource: { list },
       loading,
     } = this.props;
-    const { pagination } = this.state;
+    const { pagination, apiJsonModalVisiable, adminJsonModalVisiable } = this.state;
 
     return (
       <>
@@ -292,12 +381,48 @@ class ResourceList extends Component {
                 columns={this.columns}
                 dataSource={list}
                 pagination={pagination}
-                rowKey={record => record.username}
+                rowKey={record => record._id}
                 onChange={this.handleTableChange}
               />
             </Card>
           </div>
         </PageHeaderWrapper>
+        <Modal
+          title="Swagger API Json"
+          visible={apiJsonModalVisiable}
+          onCancel={() => {
+            this.closeApiJsonModal();
+          }}
+          onOk={() => {
+            this.generateApiResources();
+          }}
+        >
+          <Input.TextArea
+            ref={component => {
+              // eslint-disable-next-line  react/no-find-dom-node
+              this.apiJsonValue = component;
+            }}
+            rows={23}
+          />
+        </Modal>
+        <Modal
+          title="Admin Config"
+          visible={adminJsonModalVisiable}
+          onCancel={() => {
+            this.closeAdminJsonModal();
+          }}
+          onOk={() => {
+            this.generateAdminResources();
+          }}
+        >
+          <Input.TextArea
+            ref={component => {
+              // eslint-disable-next-line  react/no-find-dom-node
+              this.adminJsonValue = component;
+            }}
+            rows={23}
+          />
+        </Modal>
       </>
     );
   }

@@ -47,7 +47,7 @@ class AccountList extends Component {
       render: roles => (
         <div>
           {roles.map(role => (
-            <Tag key={role}>{role}</Tag>
+            <Tag key={role._id}>{role.name}</Tag>
           ))}
         </div>
       ),
@@ -86,9 +86,7 @@ class AccountList extends Component {
       type: 'accountList/fetch',
       payload: {
         size: pagination.pageSize || 10,
-        page: pagination.current || 1,
-        modelName: 'Account',
-        selector: '_id username name roles',
+        page: pagination.current || 1
       },
     });
   }
@@ -107,7 +105,6 @@ class AccountList extends Component {
     this.setState(
       {
         pagination,
-        prevSearchUsername: form.getFieldValue('username'),
       },
       () => {
         form.validateFields((err, fieldsValue) => {
@@ -117,8 +114,6 @@ class AccountList extends Component {
             payload: {
               size: pagination.pageSize || 10,
               page: pagination.current || 1,
-              modelName: 'Account',
-              selector: '_id name username roles',
               query: clearEmptyFields(fieldsValue),
             },
           });
@@ -169,7 +164,6 @@ class AccountList extends Component {
     pager.current = pagination.current;
     pager.pageSize = pagination.pageSize;
     pager.total = total;
-    const { prevSearchUsername } = this.state;
     this.setState(
       {
         pagination: pager,
@@ -182,7 +176,7 @@ class AccountList extends Component {
             payload: {
               pageSize: pagination.pageSize || 10,
               page: pagination.current || 1,
-              username: prevSearchUsername,
+              query: clearEmptyFields(fieldsValue),
             },
           });
         });
@@ -211,9 +205,14 @@ class AccountList extends Component {
             xl: 48,
           }}
         >
+        <Col md={8} sm={24}>
+          <FormItem label="账户名">
+            {getFieldDecorator('username')(<Input placeholder="请输入账户名" />)}
+          </FormItem>
+        </Col>
           <Col md={8} sm={24}>
-            <FormItem label="账户名">
-              {getFieldDecorator('username')(<Input placeholder="请输入" />)}
+            <FormItem label="用户昵称">
+              {getFieldDecorator('name')(<Input placeholder="请输入用户昵称" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -289,7 +288,7 @@ class AccountList extends Component {
                 columns={this.columns}
                 dataSource={list}
                 pagination={pagination}
-                rowKey={record => record.username}
+                rowKey={record => record._id}
                 onChange={this.handleTableChange}
               />
             </Card>

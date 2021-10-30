@@ -1,24 +1,25 @@
-import { getAllResources } from './service';
+import { getAllPermissions } from './service';
 import modelFactory from '../../utils/modelFactory';
 
 const Model = modelFactory({
+  urlPrefix: 'role',
   namespace: 'role',
   state: {
     list: [],
-    resources: [],
+    permissions: [],
   },
   effects: {
-    *getAllResources({ _ }, { put, call }) {
-      const response = yield call(getAllResources, { modelName: 'Resource' });
+    *getAllPermissions({ _ }, { put, call }) {
+      const response = yield call(getAllPermissions, { projection: '_id name' });
       yield put({
-        type: 'changeAllResources',
-        payload: response,
+        type: 'changeAllPermissions',
+        payload: response && response.data,
       });
     },
   },
   reducers: {
-    changeAllResources(state, { payload }) {
-      return { ...state, resources: payload.list || [] };
+    changeAllPermissions(state, { payload }) {
+      return { ...state, permissions: payload || [] };
     },
   },
 });

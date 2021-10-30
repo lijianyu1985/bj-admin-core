@@ -168,6 +168,31 @@ export default {
               ],
             },
             {
+              path: '/permission',
+              name: 'permission',
+              icon: 'idcard',
+              routes: [
+                {
+                  path: '/permission',
+                  name: 'permission-list',
+                  redirect: '/permission/list',
+                  hideInMenu: true,
+                },
+                {
+                  path: '/permission/list',
+                  name: 'permission-list',
+                  component: './permission/list',
+                  hideInMenu: true,
+                },
+                {
+                  path: '/permission/edit',
+                  name: 'permission-edit',
+                  component: './permission/edit',
+                  hideInMenu: true,
+                },
+              ],
+            },
+            {
               path: '/resource',
               name: 'resource',
               icon: 'idcard',

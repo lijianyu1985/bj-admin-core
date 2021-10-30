@@ -15,7 +15,7 @@ const Model = {
       const response = yield call(accountLogin, payload);
       yield put({
         type: 'changeLoginStatus',
-        payload: response,
+        payload: response && response.data,
       }); // Login successfully
 
       if (response.success) {
@@ -58,8 +58,8 @@ const Model = {
   },
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority, payload.token);
-      refreshToken(payload.token);
+      setAuthority(payload.currentAuthority, payload.accessToken);
+      refreshToken(payload.accessToken);
       return { ...state, status: payload.status };
     },
   },

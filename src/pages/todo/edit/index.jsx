@@ -41,7 +41,7 @@ class BasicForm extends Component {
     if (this.props.location.query.id) {
       dispatch({
         type: 'todo/get',
-        payload: { modelName: 'Todo', id: this.props.location.query.id },
+        payload: { id: this.props.location.query.id },
       });
     }
   }
@@ -60,7 +60,7 @@ class BasicForm extends Component {
     if (!editing) {
       dispatch({
         type: 'todo/create',
-        payload: { data: { ...values }, modelName: 'Todo' },
+        payload: { ...values },
         callback: () => {
           router.push({
             pathname: 'list',
@@ -72,7 +72,7 @@ class BasicForm extends Component {
       delete payload.username;
       dispatch({
         type: 'todo/change',
-        payload: { data: { ...payload }, id: todoId, modelName: 'Todo' },
+        payload: { ...payload, id: todoId },
         callback: () => {
           router.push({
             pathname: 'list',

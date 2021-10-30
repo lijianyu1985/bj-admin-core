@@ -1,41 +1,41 @@
 import request from '@/utils/request';
 
-export async function queryList(params) {
-  return request('/Common/Page', {
+export async function queryList(params, urlPrefix) {
+  return request(`/${urlPrefix}/Page`, {
     params,
   });
 }
 
-export async function all(params) {
-  return request('/Common/All', {
+export async function all(params, urlPrefix) {
+  return request(`/${urlPrefix}/Find`, {
     params,
   });
 }
 
-export async function create(params) {
-  return request('/Common/Create', {
-    method: 'POST',
+export async function create(params, urlPrefix) {
+  return request(`/${urlPrefix}/Create`, {
+    method: `POST`,
     data: params,
   });
 }
 
-export async function change(params) {
-  return request('/Common/Update', {
-    method: 'POST',
+export async function change(params, urlPrefix) {
+  return request(`/${urlPrefix}/Update`, {
+    method: `POST`,
     data: params,
   });
 }
 
-export async function get(params) {
-  return request('/Common/Get', {
-    method: 'GET',
+export async function get(params, urlPrefix) {
+  return request(`/${urlPrefix}/Get`, {
+    method: `GET`,
     params,
   });
 }
 
-export async function remove(params) {
-  return request('/Common/Delete', {
-    method: 'DELETE',
+export async function remove(params, urlPrefix) {
+  return request(`/${urlPrefix}/Delete`, {
+    method: `DELETE`,
     data: params,
   });
 }

@@ -10,7 +10,7 @@ const Model = {
       const response = yield call(queryBasicProfile);
       yield put({
         type: 'show',
-        payload: response,
+        payload: response && response.data,
       });
     },
   },

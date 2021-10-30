@@ -1,24 +1,42 @@
-import { queryList, create, change, get, remove } from '../services/common';
+import {
+  queryList,
+  create,
+  change,
+  get,
+  remove
+} from '../services/common';
 
 function Model(options) {
   this.namespace = options.namespace;
+  options.urlPrefix = options.urlPrefix || 'common';
   this.state = {
     list: [],
     current: {},
     ...options.state,
   };
   this.effects = {
-    *page({ payload }, { call, put }) {
-      const response = yield call(queryList, payload);
+    * page({
+      payload
+    }, {
+      call,
+      put
+    }) {
+      const response = yield call(queryList, payload, options.urlPrefix);
       if (response && response.success) {
         yield put({
           type: 'pageList',
-          payload: response || {},
+          payload: response && response.data || {},
         });
       }
     },
-    *create({ payload, callback }, { call, put }) {
-      const response = yield call(create, payload);
+    * create({
+      payload,
+      callback
+    }, {
+      call,
+      put
+    }) {
+      const response = yield call(create, payload, options.urlPrefix);
       if (response && response.success) {
         // eslint-disable-next-line no-unused-expressions
         if (callback) {
@@ -30,8 +48,14 @@ function Model(options) {
         });
       }
     },
-    *change({ payload, callback }, { call, put }) {
-      const response = yield call(change, payload);
+    * change({
+      payload,
+      callback
+    }, {
+      call,
+      put
+    }) {
+      const response = yield call(change, payload, options.urlPrefix);
       if (response && response.success) {
         // eslint-disable-next-line no-unused-expressions
         if (callback) {
@@ -43,8 +67,13 @@ function Model(options) {
         });
       }
     },
-    *remove({ payload, callback }, { call }) {
-      const response = yield call(remove, payload);
+    * remove({
+      payload,
+      callback
+    }, {
+      call
+    }) {
+      const response = yield call(remove, payload, options.urlPrefix);
       if (response && response.success) {
         // eslint-disable-next-line no-unused-expressions
         if (callback) {
@@ -52,12 +81,18 @@ function Model(options) {
         }
       }
     },
-    *get({ payload, callback }, { call, put }) {
-      const response = yield call(get, payload);
+    * get({
+      payload,
+      callback
+    }, {
+      call,
+      put
+    }) {
+      const response = yield call(get, payload, options.urlPrefix);
       if (response && response.success) {
         yield put({
           type: 'current',
-          payload: response || {},
+          payload: response && response.data || {},
         });
         // eslint-disable-next-line no-unused-expressions
         if (callback) {
@@ -65,7 +100,11 @@ function Model(options) {
         }
       }
     },
-    *resetCurrent({ payload }, { put }) {
+    * resetCurrent({
+      payload
+    }, {
+      put
+    }) {
       yield put({
         type: 'current',
         payload: payload || {},
@@ -86,7 +125,7 @@ function Model(options) {
     current(state, action) {
       return {
         ...state,
-        current: (action.payload && action.payload.data) || {},
+        current: (action.payload) || {},
       };
     },
     ...options.reducers,

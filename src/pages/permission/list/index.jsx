@@ -11,12 +11,16 @@ import { PlusOutlined } from '@ant-design/icons';
 import { clearEmptyFields } from '../../../utils/utils';
 
 const FormItem = Form.Item;
+const queryPatch={
+  projection: '_id name',
+  // population: 'resources:_id name',
+}
 
-@connect(({ todo, loading }) => ({
-  todo,
-  loading: loading.models.todo,
+@connect(({ permission, loading }) => ({
+  permission,
+  loading: loading.models.permission,
 }))
-class TodoList extends Component {
+class PermissionList extends Component {
   state = {
     pagination: {
       showSizeChanger: true,
@@ -29,11 +33,23 @@ class TodoList extends Component {
 
   columns = [
     {
-      title: 'TODO名',
+      title: '权限名',
       dataIndex: 'name',
       key: 'name',
       render: text => text,
     },
+    // {
+    //   title: '资源',
+    //   dataIndex: 'resources',
+    //   key: 'resources',
+    //   render: resources => (
+    //     <div>
+    //       {resources.map(resource => (
+    //         <Tag key={resource}>{resource}</Tag>
+    //       ))}
+    //     </div>
+    //   ),
+    // },
     {
       title: '操作',
       key: 'action',
@@ -61,11 +77,11 @@ class TodoList extends Component {
     const { dispatch } = this.props;
     const { pagination } = this.state;
     dispatch({
-      type: 'todo/page',
+      type: 'permission/page',
       payload: {
         size: pagination.pageSize || 10,
         page: pagination.current || 1,
-        selector: '_id name',
+        ...queryPatch
       },
     });
   }
@@ -90,11 +106,11 @@ class TodoList extends Component {
         form.validateFields((err, fieldsValue) => {
           if (err) return;
           dispatch({
-            type: 'todo/page',
+            type: 'permission/page',
             payload: {
               size: pagination.pageSize || 10,
               page: pagination.current || 1,
-              selector: '_id name',
+              ...queryPatch,
               query: clearEmptyFields(fieldsValue),
             },
           });
@@ -103,23 +119,33 @@ class TodoList extends Component {
     );
   };
 
-  deleteItem = todo => {
+  deleteItem = permission => {
     // eslint-disable-next-line no-console
     const { dispatch } = this.props;
     dispatch({
-      type: 'todo/remove',
+      type: 'permission/remove',
       // eslint-disable-next-line no-underscore-dangle
-      payload: { ids: [todo._id] },
+      payload: { ids: [permission._id] },
       callback: this.handleSearch,
     });
   };
 
-  editItem = todo => {
+  resetPassword = permission => {
+    // eslint-disable-next-line no-console
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'permission/resetPassword',
+      // eslint-disable-next-line no-underscore-dangle
+      payload: { id: permission._id },
+    });
+  };
+
+  editItem = permission => {
     router.push({
       pathname: 'edit',
       query: {
         // eslint-disable-next-line no-underscore-dangle
-        id: todo._id,
+        id: permission._id,
       },
     });
   };
@@ -128,7 +154,7 @@ class TodoList extends Component {
     // eslint-disable-next-line react/no-access-state-in-setstate
     const pager = { ...this.state.pagination };
     const {
-      todo: { total },
+      permission: { total },
       dispatch,
       form,
     } = this.props;
@@ -144,11 +170,11 @@ class TodoList extends Component {
         form.validateFields((err, fieldsValue) => {
           if (err) return;
           dispatch({
-            type: 'todo/page',
+            type: 'permission/page',
             payload: {
               size: pagination.pageSize || 10,
               page: pagination.current || 1,
-              selector: '_id name',
+              ...queryPatch,
               query: clearEmptyFields(fieldsValue),
             },
           });
@@ -159,8 +185,8 @@ class TodoList extends Component {
 
   componentDidUpdate() {
     const { pagination } = this.state;
-    if (this.props.todo.total !== pagination.total) {
-      pagination.total = this.props.todo.total;
+    if (this.props.permission.total !== pagination.total) {
+      pagination.total = this.props.permission.total;
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ pagination });
     }
@@ -179,7 +205,7 @@ class TodoList extends Component {
           }}
         >
           <Col md={8} sm={24}>
-            <FormItem label="TODO名">
+            <FormItem label="权限名">
               {getFieldDecorator('name')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
@@ -205,7 +231,7 @@ class TodoList extends Component {
 
   render() {
     const {
-      todo: { list },
+      permission: { list },
       loading,
     } = this.props;
     const { pagination } = this.state;
@@ -256,7 +282,7 @@ class TodoList extends Component {
                 columns={this.columns}
                 dataSource={list}
                 pagination={pagination}
-                rowKey={record => record.username}
+                rowKey={record => record._id}
                 onChange={this.handleTableChange}
               />
             </Card>
@@ -267,4 +293,4 @@ class TodoList extends Component {
   }
 }
 
-export default Form.create()(TodoList);
+export default Form.create()(PermissionList);

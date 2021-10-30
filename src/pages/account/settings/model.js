@@ -13,7 +13,7 @@ const Model = {
       const response = yield call(queryUsers);
       yield put({
         type: 'save',
-        payload: response,
+        payload: response && response.data,
       });
     },
 
@@ -21,7 +21,7 @@ const Model = {
       const response = yield call(queryCurrent);
       yield put({
         type: 'saveCurrentUser',
-        payload: response,
+        payload: response && response.data,
       });
     },
 
@@ -33,7 +33,7 @@ const Model = {
       const response = yield call(queryProvince);
       yield put({
         type: 'setProvince',
-        payload: response,
+        payload: response && response.data,
       });
     },
 
@@ -41,7 +41,7 @@ const Model = {
       const response = yield call(queryCity, payload);
       yield put({
         type: 'setCity',
-        payload: response,
+        payload: response && response.data,
       });
     },
   },

@@ -31,10 +31,10 @@ const codeMessage = {
 const errorHandler = error => {
   const { response } = error;
 
-  if (response && !response.success && response.error) {
+  if (response && !response.success && response.message) {
     notification.error({
-      message: response.error.code,
-      description: response.error.msg,
+      message: '请求错误',
+      description: response.message,
     });
   }
   if (response && response.status) {
@@ -64,12 +64,12 @@ const errorHandler = error => {
  * 配置request请求时的默认参数
  */
 const request = extend({
-  credentials: 'include', // 默认请求是否带上cookie
+  // credentials: 'include', // 默认请求是否带上cookie
   mode: 'cors',
   prefix: config.baseUrl,
   errorHandler,
   headers: {
-    Authorization: getToken(),
+    Authorization: `Bearer ${getToken()}`,
   },
 });
 
@@ -77,7 +77,7 @@ const request = extend({
 request.use(async (ctx, next) => {
   await next();
   const { res } = ctx;
-  if (res && !res.success && res.error) {
+  if (res && !res.success && res.message) {
     throw {
       response: res,
     };
@@ -88,7 +88,7 @@ request.use(async (ctx, next) => {
 export function refreshToken(token) {
   request.extendOptions({
     headers: {
-      Authorization: token || getToken(),
+      Authorization: `Bearer ${token || getToken()}`,
     },
   });
 }

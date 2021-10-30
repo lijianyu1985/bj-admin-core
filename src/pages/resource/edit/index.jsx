@@ -44,7 +44,7 @@ class BasicForm extends Component {
     if (this.props.location.query.id) {
       dispatch({
         type: 'resource/get',
-        payload: { modelName: 'Resource', id: this.props.location.query.id },
+        payload: {  id: this.props.location.query.id },
       });
     }
   }
@@ -60,8 +60,7 @@ class BasicForm extends Component {
     const { dispatch } = this.props;
     const { editing, resourceId } = this.state;
     const values = await this.formRef.current.validateFields([
-      'path',
-      'name',
+      'identifier',
       'type',
       'data',
       'description',
@@ -69,7 +68,7 @@ class BasicForm extends Component {
     if (!editing) {
       dispatch({
         type: 'resource/create',
-        payload: { data: { ...values }, modelName: 'Resource' },
+        payload: { ...values },
         callback: () => {
           router.push({
             pathname: 'list',
@@ -81,7 +80,7 @@ class BasicForm extends Component {
       delete payload.name;
       dispatch({
         type: 'resource/change',
-        payload: { data: { ...payload }, id: resourceId, modelName: 'Resource' },
+        payload: { ...payload, id: resourceId },
         callback: () => {
           router.push({
             pathname: 'list',
@@ -107,11 +106,8 @@ class BasicForm extends Component {
           </div>
           <Card bordered={false}>
             <Form ref={this.formRef} {...layout} initialValues={current}>
-              <Form.Item label="资源名" name="name" rules={[{ required: true, message: '资源名' }]}>
+              <Form.Item label="资源标识" name="identifier" rules={[{ required: true, message: '资源标识' }]}>
                 <Input disabled={editing} />
-              </Form.Item>
-              <Form.Item label="路径" name="path" rules={[{ required: true, message: '路径' }]}>
-                <Input />
               </Form.Item>
               <Form.Item label="类型" name="type" rules={[{ required: true, message: '类型' }]}>
                 <Select>

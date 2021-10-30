@@ -12,7 +12,7 @@ const Model = {
       if (response && response.success) {
         yield put({
           type: 'pageList',
-          payload: response || {},
+          payload: response && response.data  || {},
         });
       }
     },
@@ -56,7 +56,7 @@ const Model = {
       if (response && response.success) {
         yield put({
           type: 'currentCategory',
-          payload: response || {},
+          payload: response && response.data  || {},
         });
       }
     },
@@ -80,7 +80,7 @@ const Model = {
     currentCategory(state, action) {
       return {
         ...state,
-        current: (action.payload && action.payload.data) || {},
+        current: (action.payload ) || {},
       };
     },
   },

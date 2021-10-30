@@ -20,7 +20,7 @@ const Model = {
       const response = yield call(fakeChartData);
       yield put({
         type: 'save',
-        payload: response,
+        payload: response && response.data,
       });
     },
 
